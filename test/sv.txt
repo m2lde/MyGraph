@@ -1,0 +1,7 @@
+DictGraph(false, DataStructures.SortedDict{Int64,DataStructures.SortedSet{Link,Ord} where Ord<:Base.Order.Ordering,Base.Order.ForwardOrdering}(1=>SortedSet(Link[Link(3, 95.0), Link(4, 99.0), Link(5, 33.0), Link(6, 108.0)],
+ForwardOrdering()),2=>SortedSet(Link[Link(1, 27.0), Link(3, 8.0), Link(4, 7.0), Link(5, 108.0), Link(6, 85.0)],
+ForwardOrdering()),3=>SortedSet(Link[Link(1, 95.0), Link(2, 8.0), Link(4, 32.0), Link(5, 62.0), Link(6, 92.0)],
+ForwardOrdering()),4=>SortedSet(Link[Link(1, 99.0), Link(2, 7.0), Link(3, 32.0), Link(5, 28.0), Link(6, 13.0)],
+ForwardOrdering()),5=>SortedSet(Link[Link(1, 33.0), Link(2, 108.0), Link(3, 62.0), Link(4, 28.0), Link(6, 70.0)],
+ForwardOrdering()),6=>SortedSet(Link[Link(1, 108.0), Link(2, 85.0), Link(3, 92.0), Link(4, 13.0), Link(5, 70.0)],
+ForwardOrdering())))
