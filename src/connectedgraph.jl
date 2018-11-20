@@ -1,17 +1,17 @@
-function buildconnectedgraph!(v::Array, f::Function, G::DictGraph)
+function buildconnectedgraph!(v::Array, G::DictGraph; f::Function = (a,b) -> 1)
     length(v) <= 1 && return
     x = pop!(v)
     for u in v
         addedge!(G, x, u; weight = f(x,u))
     end
-    buildconnectedgraph!(G,v,f)
+    buildconnectedgraph!(v,G;f = f)
 end
 
-function buildconnectedgraph(v::Array, f::Function = x -> 1, G::DictGraph = DictGraph())
+function buildconnectedgraph(v::Array, G::DictGraph = DictGraph(); f::Function = (a,b) -> 1)
     length(v) <= 1 && return G
     x = pop!(v)
     for u in v
         addedge!(G, x, u; weight = f(x,u))
     end
-    buildconnectedgraph(v,f,G)
+    buildconnectedgraph(v,G; f = f)
 end

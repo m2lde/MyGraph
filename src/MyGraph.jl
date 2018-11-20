@@ -7,11 +7,12 @@ import Base: ==, isless, getindex, setindex!, isempty, isequal
         #structs
 export  Graph, DictGraph, Link,
         #functions
-        delvertex, delvertex!, addedge, addedge!, vertices, buildconnectedgraph!,
+        delvertex, delvertex!, addedge, addedge!, addvertex, addvertex!,
+        vertices, buildconnectedgraph!,
         buildconnectedgraph, getweight, minweight, minweightdict,
         #algotihms
         DFS, BFS, BFSv2, printpath, sortededgesbyweight,
-        mstkruskal, mstprimjarnik, dijkstra, alg1,
+        mstkruskal, mstprimjarnik, dijkstra, makecirclepath,
         #macros
         @buildgraph
 

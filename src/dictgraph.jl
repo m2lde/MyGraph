@@ -1,12 +1,12 @@
 abstract type AbstractGraph end
 
 mutable struct DictGraph <: AbstractGraph
-    isDirected::Bool
+    directed::Bool
     relation::SortedDict{Int,SortedSet{Link}}
 
-    DictGraph(;isDirected = false, relation = SortedDict{Int,SortedSet{Link}}()) = new(isDirected, relation)
+    DictGraph(;directed = false, relation = SortedDict{Int,SortedSet{Link}}()) = new(directed, relation)
     function DictGraph(G::DictGraph)
-        S = SortedDict(G.relation); b= G.isDirected;
+        S = SortedDict(G.relation); b= G.directed;
         new(S, b)
     end
 end #Graph
@@ -36,11 +36,21 @@ function delvertex(G::DictGraph, v::Int)
     return T
 end
 
-function addedge!(G::DictGraph, v::Int, u::Int; weight::Real = 1.0) :: Nothing
+function addvertex!(G::DictGraph, v::Int) :: Nothing
     haskey(G.relation, v) || push!(G.relation, v => SortedSet{Link}())
-    haskey(G.relation, u) || push!(G.relation, u => SortedSet{Link}())
+    nothing
+end
 
-    if G.isDirected
+function addvertex(G::DictGraph, v::Int)
+    T = DictGraph(G)
+    addvertex!(T, v)
+    T
+end
+
+function addedge!(G::DictGraph, v::Int, u::Int; weight::Real = 1.0) :: Nothing
+    addvertex!(G,v); addvertex!(G,u);
+
+    if G.directed
         push!(G.relation[v], Link(u,weight))
     else
         push!(G.relation[v], Link(u,weight))

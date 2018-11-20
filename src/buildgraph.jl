@@ -1,5 +1,5 @@
-macro buildgraph(directed::Bool, edges...)
-    G = DictGraph(isDirected = directed)
+macro buildgraph(d::Bool, edges...)
+    G = DictGraph(;directed = d)
     count = 0
     for e in edges
         count += 1

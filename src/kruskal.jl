@@ -2,7 +2,7 @@
 
 =#
 function sortededgesbyweight(G::DictGraph)
-    @assert !G.isDirected "the graph must be undirected"
+    @assert !G.directed "the graph must be undirected"
     𝑄 = PriorityQueue{Tuple{Int,Int}, Int}()
     for k in keys(G.relation)
         for link in G.relation[k]
@@ -18,6 +18,7 @@ function mstkruskal(G::DictGraph)
     T = DictGraph()
     Q = sortededgesbyweight(G)
     DS = IntDisjointSets(length(G.relation))
+
     while !isempty(Q)
         e = dequeue_pair!(Q)
         if !in_same_set(DS, e.first[1] + 1, e.first[2] + 1)

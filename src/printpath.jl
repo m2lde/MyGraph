@@ -1,10 +1,10 @@
-function printpath(d::Dict, s::Int, v::Int)
+function printpath(d::AbstractDict, s::Int, v::Int; pred = 2)
     if s == v
         println(s)
-    elseif d[v][3] == -1
-        println("no path from $s to $v exists.")
+    elseif d[v][pred] == -1
+        error("no path from $s to $v exists.")
     else
-        printpath(d, s, d[v][3])
+        printpath(d, s, d[v][pred])
         println(v)
     end
 end
