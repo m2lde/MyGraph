@@ -1,0 +1,7 @@
+name = "MyGraph"
+uuid = "a37731f8-c5b9-11e9-01c8-5f0a1020647f"
+authors = ["quaqix <m2l_0@outlook.com>"]
+version = "0.1.0"
+
+[deps]
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
