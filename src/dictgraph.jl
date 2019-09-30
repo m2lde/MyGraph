@@ -1,91 +1,106 @@
 abstract type AbstractGraph end
 
 mutable struct DictGraph <: AbstractGraph
-    directed::Bool
-    relation::SortedDict{Int,SortedSet{Link}}
-
-    DictGraph(;directed = false, relation = SortedDict{Int,SortedSet{Link}}()) = new(directed, relation)
-    function DictGraph(G::DictGraph)
-        S = SortedDict(G.relation); b= G.directed;
-        new(S, b)
-    end
-end #Graph
-
-vertices(G::DictGraph) = collect(keys(G.relation))
-
-function delvertex!(G::DictGraph, v::Int) :: Nothing
-    haskey(G.relation, v) || error("vertex $v not found.")
-
-    #remove all edges
-    for k in vertices(G)
-        k == v && continue
-        S = SortedSet{Link}();
-        for l in G[k]
-            l.u != v && push!(S, l)
-        end
-        G.relation[k] = S
-    end
-    #delete vertex
-    delete!(G.relation, v)
-    nothing
+    isdirected::Bool
+    isweighted::Bool
+    numvertices::UInt
+    numedges::UInt
+    vvwr::Dict{UInt,Dict{UInt,Float32}} #vertex => {(vertex,weight),...} relation
 end
 
-function delvertex(G::DictGraph, v::Int)
-    T = DictGraph(G)
-    delvertex!(T,v)
-    return T
+function DictGraph(;isdirected = false, isweighted = false, vvwr = Dict{UInt, Dict{UInt,Float32}}())
+    DictGraph(isdirected, isweighted, 0, 0, vvwr)
 end
+
+function DictGraph(G::DictGraph)
+    DictGraph(G.isdirected, G.isweighted, G.numvertices, G.numedges, Dict(G.vvwr))
+end
+
+#Basic operations over graph.
+vertices(G::DictGraph) = collect(keys(G.vvwr))
 
 function addvertex!(G::DictGraph, v::Int) :: Nothing
-    haskey(G.relation, v) || push!(G.relation, v => SortedSet{Link}())
-    nothing
+    haskey(G.vvwr, v) || (G[v] = Dict{UInt,Float32}())
+    G.numvertices += 1
 end
 
-function addvertex(G::DictGraph, v::Int)
+function addvertex(G::DictGraph, v::Int)::DictGraph
     T = DictGraph(G)
     addvertex!(T, v)
     T
 end
 
-function addedge!(G::DictGraph, v::Int, u::Int; weight::Real = 1.0) :: Nothing
-    addvertex!(G,v); addvertex!(G,u);
+function delvertex!(G::DictGraph, v::Int) :: Nothing
+    haskey(G.vvwr, v) || error("vertex $v does not belongs to this graph.")
 
-    if G.directed
-        push!(G.relation[v], Link(u,weight))
-    else
-        push!(G.relation[v], Link(u,weight))
-        push!(G.relation[u], Link(v,weight))
+    #remove all edges
+    for k in vertices(G)
+        k != v && delete!(G[k],v)
     end
-    nothing
+
+    #delete vertex
+    delete!(G.vvwr, v)
+    G.numvertices -= 1
+end
+
+function delvertex(G::DictGraph, v::Int)::DictGraph
+    T = DictGraph(G)
+    delvertex!(T,v)
+    T
+end
+
+function addedge!(G::DictGraph, source::Int, target::Int; weight::Real = 1.0) :: Nothing
+    addvertex!(G, source)
+    addvertex!(G, target)
+    push!(G[source], target => weight)
+    !G.isdirected && push!(G[target], source => weight)
+    G.numedges += 1
+end
+
+function addedge!(G::DictGraph, edge::Tuple{UInt,UInt,Real})::Nothing
+    addedge!(G,edge[1],edge[2]; weight = edge[3])
+end
+
+function addedge!(G::DictGraph, edges::Vararg{Tuple{UInt,UInt,Real},N} where N)::Nothing
+    for edge in edges
+        addedge!(G,edge)
+    end
 end
 
 function addedge(G::DictGraph, v::Int, u::Int; weight::Real = 1.0) :: DictGraph
-    w = weight;T = G; addedge!(T, v, u; weight = w);
-    return T
+    T = DictGraph(G);
+    addedge!(T, v, u; weight = weight);
+    T
 end
 
 function getindex(G::DictGraph, i::Int)
-    return G.relation[i]
+    return G.vvwr[i]
 end
 
-function getweight(G::DictGraph, s::Int, t::Int)
-    for ℒ in G[s]
-        ℒ.u == t && (return ℒ.w)
+function getedgeweight(G::DictGraph, source::Int, target::Int)::Float32
+    !G.isweighted || error("Graph is not weghted.")
+    haskey(G.vvwr, source) || error("vertex $source does not belongs to this graph.")
+    haskey(G.vvwr, source) || error("vertex $target does not belongs to this graph.")
+    G[source][target]
+end
+
+function minweightedgefromvertex(G::DictGraph, vertex::Int, restrict::Vararg{Int,N} where N)::Pair{Int, Float32}
+    !G.isweighted || error("Graph is not weghted.")
+    haskey(G[vertex]) || error("vertex $vertex does not belongs to this graph.")
+
+    S = Set(restrict)
+    t = Pair(-1, Inf32);
+    for kv in G[vertex]
+         (kv[2] < t && !(kv[1] ∈ S)) && (t = kv)
     end
+    t
 end
 
-function minweight(G::DictGraph, vertex::Int; restrict = Set{Int}())
-    ℒ = Link(-1, 0.0); t = Inf;
-    for link in G[vertex]
-         (link.w < t && !(link.u in restrict)) && (ℒ = link; t = link.w)
-     end
-     return ℒ
-end
-
-function minweightdict(G::DictGraph)
-    D = SortedDict{Int,Link}()
-    for v in keys(G)
-        push!(D, v => minweight(G, v))
+function minweightedge(G::DictGraph)::Pair{Float32, Tuple{Int,Int}}
+    D = Array{Pair{Float32, Tuple{Int,Int}}}()
+    for v in vertices(G)
+        x = minweightedgefromvertex(G,v)
+        push!(D, x[2] => (v, x[1]))
     end
-    return D
+    min(D)
 end

@@ -1,4 +1,4 @@
-function printpath(d::AbstractDict, s::Int, v::Int; pred = 2)
+function printpath(d::AbstractDict, s::Int, v::Int; pred = 2)::Nothing
     if s == v
         println(s)
     elseif d[v][pred] == -1

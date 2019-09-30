@@ -5,29 +5,26 @@ module MyGraph
 import Base: ==, isless, getindex, setindex!, isempty, isequal
 
         #structs
-export  Graph, DictGraph, Link,
+export  AbstractGraph, DictGraph,
         #functions
         delvertex, delvertex!, addedge, addedge!, addvertex, addvertex!,
         vertices, buildconnectedgraph!,
         buildconnectedgraph, getweight, minweight, minweightdict,
         #algotihms
         DFS, BFS, BFSv2, printpath, sortededgesbyweight,
-        mstkruskal, mstprimjarnik, dijkstra, makecirclepath,
-        #macros
-        @buildgraph
+        mstkruskal, mstprimjarnik, dijkstra, makecirclepath
 
-using   DataStructures
+using DataStructures
 
-include("link.jl")
 include("dictgraph.jl")
-include("dijkstra.jl")
 include("connectedgraph.jl")
-include("DFS.jl")
-include("BFS.jl")
-include("printpath.jl")
-include("buildgraph.jl")
-include("kruskal.jl")
-include("primjarnik.jl")
-include("alg1.jl")
+#algorihms
+include("algorithms/dijkstra.jl")
+include("algorithms/DFS.jl")
+include("algorithms/BFS.jl")
+include("algorithms/printpath.jl")
+include("algorithms/kruskal.jl")
+include("algorithms/primjarnik.jl")
+include("algorithms/alg1.jl")
 
 end #module → ↔
