@@ -35,7 +35,7 @@ vertices(G::AbstractDictGraph) = collect(keys(G.vvwr))
 
 function add_vertex!(G::AbstractDictGraph{V,E}, vertices::Vararg{V,N} where N) :: Nothing where {V,E}
     for vertex in vertices
-        !haskey(G.vvwr, vertex) && push!(G.vvwr, vertex => Dict{V,E}()) && G.numvertices += 1
+        (!haskey(G.vvwr, vertex) && push!(G.vvwr, vertex => Dict{V,E}())) && G.numvertices += 1
     end
     nothing
 end
